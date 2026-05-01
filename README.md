@@ -17,8 +17,8 @@ Système Intégré de Gestion de l'Emploi du Temps et de Suivi Pédagogique
 
 ### 1. Cloner le projet
 ```bash
-git clone https://github.com/VOTRE-COMPTE/eduschedule-pro.git
-cd eduschedule-pro
+git clone https://github.com/dipamalionellkevinregis/eduschedulepro.git
+cd eduschedulepro
 ```
 
 ### 2. Configurer l'environnement
@@ -90,6 +90,7 @@ eduschedule-pro/
 ## Membres du groupe
 | Nom | Rôle dans le projet |
 |-----|---------------------|
-| Membre 1 | ... |
-| Membre 2 | ... |
-| Membre 3 | ... |
+| DIPAMA Lionel Kevin Regis | ... |
+| DADA Guillaume Lamoussa | ... |
+| KABORE Emmanuel | ... |
+| NIKIEMA Maria Roxane | ... |
