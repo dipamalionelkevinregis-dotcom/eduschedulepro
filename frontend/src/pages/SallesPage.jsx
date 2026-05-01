@@ -1,0 +1,1 @@
+export { SallesPage as default } from './ReferentielsPages'

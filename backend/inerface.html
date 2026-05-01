@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduSchedule Pro — Interface Test</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --success: #10B981;
+    --danger:  #EF4444;
+    --warning: #F59E0B;
+    --dark:    #1E293B;
+    --gray:    #64748B;
+    --light:   #F8FAFC;
+    --border:  #E2E8F0;
+    --white:   #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 240px;
+    background: var(--dark);
+    color: white;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sidebar-logo h2 { font-size: 1.1rem; font-weight: 800; }
+  .sidebar-logo p  { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.2rem; }
+
+  .sidebar-section {
+    padding: 0.75rem 1.25rem 0.25rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35);
+    margin-top: 0.5rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1.25rem;
+    color: rgba(255,255,255,0.7);
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.15s;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+  .nav-btn.active { background: rgba(79,70,229,0.3); color: white; border-left: 3px solid var(--primary); }
+
+  .sidebar-user {
+    margin-top: auto;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.8rem;
+  }
+
+  .sidebar-user .role { color: rgba(255,255,255,0.5); font-size: 0.7rem; text-transform: capitalize; }
+
+  /* ── Main ── */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── Login ── */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1e293b 0%, #4F46E5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .login-logo { text-align: center; margin-bottom: 2rem; }
+  .login-logo .icon { font-size: 3rem; }
+  .login-logo h1 { font-size: 1.5rem; font-weight: 800; margin-top: 0.5rem; }
+  .login-logo p  { color: var(--gray); font-size: 0.875rem; }
+
+  /* ── Composants ── */
+  .card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-title { font-size: 1rem; font-weight: 700; }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-title   { font-size: 1.5rem; font-weight: 800; }
+  .page-subtitle { color: var(--gray); font-size: 0.875rem; margin-top: 0.2rem; }
+
+  .content { padding: 1.5rem; flex: 1; }
+
+  .form-group   { margin-bottom: 1rem; }
+  .form-label   { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .form-control {
+    width: 100%; padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.875rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+  .btn {
+    padding: 0.5rem 1.25rem;
+    border: none; border-radius: 8px;
+    cursor: pointer; font-size: 0.875rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary   { background: var(--primary); color: white; }
+  .btn-success   { background: var(--success); color: white; }
+  .btn-danger    { background: var(--danger);  color: white; }
+  .btn-warning   { background: var(--warning); color: white; }
+  .btn-secondary { background: white; color: var(--dark); border: 1px solid var(--border); }
+  .btn-sm        { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
+  .btn:disabled  { opacity: 0.5; cursor: not-allowed; }
+
+  .badge {
+    padding: 0.2rem 0.6rem; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 700;
+  }
+  .badge-success { background: #d1fae5; color: #065f46; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+  .badge-danger  { background: #fee2e2; color: #991b1b; }
+  .badge-primary { background: #ede9fe; color: #5b21b6; }
+  .badge-gray    { background: #f1f5f9; color: #475569; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  thead tr { background: var(--light); }
+  thead th {
+    padding: 0.7rem 1rem; text-align: left;
+    font-weight: 700; color: var(--gray);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem; text-transform: uppercase;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:hover { background: var(--light); }
+  tbody td { padding: 0.7rem 1rem; }
+
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+
+  .stat-value { font-size: 1.75rem; font-weight: 800; }
+  .stat-label { font-size: 0.78rem; color: var(--gray); }
+
+  .toast {
+    position: fixed; top: 1rem; right: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px; color: white;
+    font-weight: 600; z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+    max-width: 350px;
+  }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .error-box {
+    background: #fee2e2; color: #991b1b;
+    padding: 0.75rem; border-radius: 8px;
+    margin-bottom: 1rem; font-size: 0.875rem;
+  }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; padding: 1rem;
+  }
+
+  .modal-box {
+    background: white; border-radius: 14px;
+    padding: 2rem; width: 100%;
+    max-width: 500px; max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 1.5rem;
+  }
+
+  .modal-close {
+    background: none; border: none;
+    font-size: 1.5rem; cursor: pointer; color: var(--gray);
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 2rem auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty {
+    text-align: center; padding: 3rem; color: var(--gray);
+  }
+
+  .demo-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.5rem; margin-top: 1rem;
+  }
+
+  .demo-btn {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.5rem 0.75rem;
+    cursor: pointer; text-align: left;
+    font-size: 0.78rem; transition: background 0.15s;
+    display: flex; flex-direction: column; gap: 0.1rem;
+  }
+  .demo-btn:hover { background: #e2e8f0; }
+  .demo-btn strong { color: var(--dark); }
+  .demo-btn span   { color: var(--gray); }
+
+  .hidden { display: none !important; }
+
+  .grille-hebdo {
+    display: grid;
+    grid-template-columns: 60px repeat(6, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .grille-header {
+    padding: 0.6rem; text-align: center;
+    font-weight: 700; font-size: 0.8rem;
+    background: var(--light);
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  .grille-heure {
+    padding: 0.4rem; font-size: 0.7rem;
+    color: var(--gray); text-align: right;
+    border-bottom: 1px solid #f1f5f9;
+    border-right: 1px solid var(--border);
+    background: var(--light);
+  }
+
+  .grille-cell {
+    border-bottom: 1px solid #f1f5f9;
+    border-right: 1px solid var(--border);
+    min-height: 45px; position: relative;
+  }
+
+  .creneau-chip {
+    position: absolute; inset: 2px;
+    border-radius: 6px; padding: 3px 6px;
+    color: white; font-size: 0.7rem;
+    cursor: pointer; overflow: hidden;
+  }
+
+  .sign-canvas {
+    border: 2px dashed var(--border);
+    border-radius: 8px; cursor: crosshair;
+    touch-action: none; background: white;
+    width: 100%; height: 150px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN DE LOGIN
+══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">📅</div>
+      <h1>EduSchedule Pro</h1>
+      <p>ISGE-BF — Réseaux et Télécoms</p>
+    </div>
+
+    <div id="login-error" class="error-box hidden"></div>
+
+    <div class="form-group">
+      <label class="form-label">Adresse email</label>
+      <input type="email" class="form-control" id="inp-email" placeholder="votre@email.bf" value="admin@isge.bf" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-control" id="inp-password" placeholder="••••••••" value="Admin@2026" />
+    </div>
+    <button class="btn btn-primary" id="btn-login" onclick="doLogin()" style="width:100%;padding:0.75rem;margin-top:0.5rem">
+      🔐 Se connecter
+    </button>
+
+    <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <p style="font-size:0.8rem;color:var(--gray);text-align:center;margin-bottom:0.5rem">Comptes de démonstration</p>
+      <div class="demo-grid">
+        <button class="demo-btn" onclick="setDemo('admin@isge.bf','Admin@2026')"><strong>👑 Admin</strong><span>admin@isge.bf</span></button>
+        <button class="demo-btn" onclick="setDemo('cbere@isge.bf','Enseignant@2026')"><strong>👨‍🏫 Enseignant</strong><span>cbere@isge.bf</span></button>
+        <button class="demo-btn" onclick="setDemo('delegue.l3@isge.bf','Delegue@2026')"><strong>📓 Délégué</strong><span>delegue.l3@isge.bf</span></button>
+        <button class="demo-btn" onclick="setDemo('surveillant@isge.bf','Surveillant@2026')"><strong>👁️ Surveillant</strong><span>surveillant@isge.bf</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     APP PRINCIPALE
+══════════════════════════════════════════════════════════ -->
+<div id="app" class="hidden" style="display:flex;width:100%">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h2>📅 EduSchedule</h2>
+      <p>Pro — ISGE-BF RST</p>
+    </div>
+
+    <nav style="padding:0.5rem 0;flex:1">
+      <div class="sidebar-section">Principal</div>
+      <button class="nav-btn active" onclick="showPage('dashboard')">🏠 Tableau de bord</button>
+      <button class="nav-btn" onclick="showPage('emploi-temps')">📅 Emploi du temps</button>
+      <button class="nav-btn" onclick="showPage('pointage')">📱 Pointage QR</button>
+      <button class="nav-btn" onclick="showPage('cahiers')">📓 Cahier de texte</button>
+      <button class="nav-btn" onclick="showPage('vacations')">💰 Vacations</button>
+      <button class="nav-btn" onclick="showPage('rapports')">📊 Rapports</button>
+
+      <div class="sidebar-section" id="section-ref">Référentiels</div>
+      <button class="nav-btn" id="nav-classes" onclick="showPage('classes')">🏫 Classes</button>
+      <button class="nav-btn" id="nav-enseignants" onclick="showPage('enseignants')">👨‍🏫 Enseignants</button>
+      <button class="nav-btn" id="nav-matieres" onclick="showPage('matieres')">📚 Matières</button>
+      <button class="nav-btn" id="nav-salles" onclick="showPage('salles')">🚪 Salles</button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div id="sidebar-nom" style="font-weight:700;color:white;font-size:0.875rem"></div>
+      <div id="sidebar-role" class="role"></div>
+      <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:0.5rem" onclick="doLogout()">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- Contenu -->
+  <main class="main">
+    <div class="content" id="page-content">
+      <div class="spinner"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 id="modal-title" style="font-size:1.15rem;font-weight:800"></h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  Configuration
+// ══════════════════════════════════════════════════════════
+const API   = 'http://localhost/eduschedulepro/backend/api'
+let TOKEN   = localStorage.getItem('edu_token') || ''
+let USER    = JSON.parse(localStorage.getItem('edu_user') || 'null')
+let CURRENT = 'dashboard'
+
+const COULEURS = ['#4F46E5','#0891B2','#059669','#D97706','#DC2626','#7C3AED','#DB2777']
+const JOURS    = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi']
+const HEURES   = ['07h','08h','09h','10h','11h','12h','13h','14h','15h','16h','17h','18h']
+const MOIS_NOM = ['','Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
+
+// ══════════════════════════════════════════════════════════
+//  API Helper
+// ══════════════════════════════════════════════════════════
+async function api(method, path, body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` }
+  }
+  if (body) opts.body = JSON.stringify(body)
+  try {
+    const res  = await fetch(API + path, opts)
+    const data = await res.json()
+    if (res.status === 401) { doLogout(); return null }
+    return data
+  } catch (e) {
+    showToast('❌ Erreur réseau — WAMP démarré ?', 'danger')
+    return null
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════════
+function setDemo(email, pwd) {
+  document.getElementById('inp-email').value    = email
+  document.getElementById('inp-password').value = pwd
+}
+
+async function doLogin() {
+  const email    = document.getElementById('inp-email').value.trim()
+  const password = document.getElementById('inp-password').value.trim()
+  const errBox   = document.getElementById('login-error')
+  const btn      = document.getElementById('btn-login')
+
+  errBox.classList.add('hidden')
+  btn.disabled   = true
+  btn.textContent = '⏳ Connexion...'
+
+  const data = await fetch(API + '/auth/login', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ email, password })
+  }).then(r => r.json()).catch(() => null)
+
+  btn.disabled   = false
+  btn.textContent = '🔐 Se connecter'
+
+  if (data?.success) {
+    TOKEN = data.token
+    USER  = data.user
+    localStorage.setItem('edu_token', TOKEN)
+    localStorage.setItem('edu_user',  JSON.stringify(USER))
+    initApp()
+  } else {
+    errBox.textContent = '⚠️ ' + (data?.error || 'Identifiants incorrects.')
+    errBox.classList.remove('hidden')
+  }
+}
+
+function doLogout() {
+  TOKEN = ''
+  USER  = null
+  localStorage.removeItem('edu_token')
+  localStorage.removeItem('edu_user')
+  document.getElementById('app').classList.add('hidden')
+  document.getElementById('login-screen').style.display = 'flex'
+}
+
+document.getElementById('inp-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin()
+})
+
+// ══════════════════════════════════════════════════════════
+//  Init App
+// ══════════════════════════════════════════════════════════
+function initApp() {
+  document.getElementById('login-screen').style.display = 'none'
+  document.getElementById('app').classList.remove('hidden')
+  document.getElementById('sidebar-nom').textContent  = USER?.nom_complet || USER?.email
+  document.getElementById('sidebar-role').textContent = USER?.role
+
+  // Masquer référentiels si pas admin
+  if (USER?.role !== 'admin') {
+    document.getElementById('section-ref').classList.add('hidden')
+    ;['classes','enseignants','matieres','salles'].forEach(id => {
+      document.getElementById('nav-' + id)?.classList.add('hidden')
+    })
+  }
+
+  showPage('dashboard')
+}
+
+// Auto-login si token existant
+if (TOKEN && USER) initApp()
+
+// ══════════════════════════════════════════════════════════
+//  Navigation
+// ══════════════════════════════════════════════════════════
+function showPage(page) {
+  CURRENT = page
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick')?.includes(`'${page}'`)) b.classList.add('active')
+  })
+  const pages = {
+    'dashboard':    renderDashboard,
+    'emploi-temps': renderEmploiTemps,
+    'pointage':     renderPointage,
+    'cahiers':      renderCahiers,
+    'vacations':    renderVacations,
+    'rapports':     renderRapports,
+    'classes':      renderClasses,
+    'enseignants':  renderEnseignants,
+    'matieres':     renderMatieres,
+    'salles':       renderSalles,
+  }
+  const fn = pages[page]
+  if (fn) fn()
+}
+
+// ══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════════════
+async function renderDashboard() {
+  setContent('<div class="spinner"></div>')
+  const data = await api('GET', '/dashboard/stats')
+  if (!data?.success) { setContent('<div class="empty">❌ Impossible de charger le dashboard.</div>'); return }
+  const d = data.data
+
+  let html = `
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">🏠 Tableau de bord</h1>
+      <p class="page-subtitle">Bienvenue, ${USER?.nom_complet || USER?.email} — ${USER?.role}</p>
+    </div>
+    <button class="btn btn-secondary" onclick="renderDashboard()">🔄 Actualiser</button>
+  </div>`
+
+  if (USER?.role === 'admin') {
+    const kpis = [
+      { icon:'📅', label:"Séances aujourd'hui", val: d.seances_jour||0,        bg:'#EEF2FF', c:'#4F46E5' },
+      { icon:'✅', label:'Pointages du jour',    val: d.pointages_jour||0,      bg:'#D1FAE5', c:'#059669' },
+      { icon:'⚠️', label:'Retards du jour',       val: d.retards_jour||0,        bg:'#FEF3C7', c:'#D97706' },
+      { icon:'📓', label:'Cahiers non clôturés', val: d.cahiers_non_clos||0,   bg:'#FEE2E2', c:'#EF4444' },
+      { icon:'💰', label:'Vacations en attente', val: d.vacations_attente||0,   bg:'#F0FDF4', c:'#16A34A' },
+      { icon:'👨‍🏫', label:'Enseignants actifs',   val: d.enseignants_actifs||0,  bg:'#F0F9FF', c:'#0284C7' },
+    ]
+    html += '<div class="stats-grid">'
+    kpis.forEach(k => {
+      html += `<div class="stat-card">
+        <div class="stat-icon" style="background:${k.bg}">${k.icon}</div>
+        <div>
+          <div class="stat-value" style="color:${k.c}">${k.val}</div>
+          <div class="stat-label">${k.label}</div>
+        </div>
+      </div>`
+    })
+    html += '</div>'
+
+    if (d.stats_classes?.length) {
+      html += `<div class="card"><div class="card-header"><h3 class="card-title">📊 Séances par classe cette semaine</h3></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Classe</th><th>Planifiées</th><th>Réalisées</th><th>Taux</th></tr></thead>
+        <tbody>`
+      d.stats_classes.forEach(c => {
+        const taux = c.seances_planifiees > 0 ? Math.round((c.seances_realisees / c.seances_planifiees) * 100) : 0
+        const color = taux >= 80 ? '#10b981' : taux >= 50 ? '#f59e0b' : '#ef4444'
+        html += `<tr>
+          <td><strong>${c.classe}</strong></td>
+          <td>${c.seances_planifiees}</td>
+          <td>${c.seances_realisees}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <div style="flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+                <div style="width:${taux}%;height:100%;background:${color};border-radius:4px"></div>
+              </div>
+              <span style="font-weight:700;font-size:0.8rem">${taux}%</span>
+            </div>
+          </td>
+        </tr>`
+      })
+      html += '</tbody></table></div></div>'
+    }
+  } else if (USER?.role === 'enseignant') {
+    html += `<div class="card"><div class="card-header"><h3 class="card-title">📅 Mes séances de la semaine</h3></div>`
+    if (!d.seances_semaine?.length) {
+      html += '<div class="empty">Aucune séance cette semaine.</div>'
+    } else {
+      html += `<div class="table-wrap"><table>
+        <thead><tr><th>Jour</th><th>Horaire</th><th>Matière</th><th>Classe</th><th>Salle</th><th>Statut</th></tr></thead>
+        <tbody>`
+      d.seances_semaine.forEach(s => {
+        const badge = s.statut === 'terminé' ? 'success' : s.statut === 'en_cours' ? 'warning' : 'gray'
+        html += `<tr>
+          <td><strong>${s.jour}</strong></td>
+          <td>${s.heure_debut?.substring(0,5)} – ${s.heure_fin?.substring(0,5)}</td>
+          <td>${s.matiere}</td><td>${s.classe}</td><td>${s.salle}</td>
+          <td><span class="badge badge-${badge}">${s.statut}</span></td>
+        </tr>`
+      })
+      html += '</tbody></table></div>'
+    }
+    html += `</div>
+    <div class="card"><div class="card-header"><h3 class="card-title">💰 Mes fiches de vacation</h3></div>`
+    if (!d.fiches_vacation?.length) {
+      html += '<div class="empty">Aucune fiche générée.</div>'
+    } else {
+      html += `<div class="table-wrap"><table>
+        <thead><tr><th>Période</th><th>Séances</th><th>Heures</th><th>Montant net</th><th>Statut</th></tr></thead><tbody>`
+      d.fiches_vacation.forEach(f => {
+        html += `<tr>
+          <td>${MOIS_NOM[f.mois]} ${f.annee}</td>
+          <td>${f.nb_seances}</td>
+          <td>${parseFloat(f.total_heures||0).toFixed(1)}h</td>
+          <td><strong>${parseInt(f.montant_net||0).toLocaleString()} FCFA</strong></td>
+          <td><span class="badge badge-${f.statut==='approuvée'?'success':'warning'}">${f.statut}</span></td>
+        </tr>`
+      })
+      html += '</tbody></table></div>'
+    }
+    html += '</div>'
+  } else {
+    html += `<div class="card"><div class="empty">
+      <div style="font-size:3rem">👋</div>
+      <p style="margin-top:1rem">Bienvenue sur EduSchedule Pro !</p>
+      <p style="margin-top:0.5rem">Utilisez le menu de gauche pour naviguer.</p>
+    </div></div>`
+  }
+
+  setContent(html)
+}
+
+// ══════════════════════════════════════════════════════════
+//  EMPLOI DU TEMPS
+// ══════════════════════════════════════════════════════════
+async function renderEmploiTemps() {
+  setContent('<div class="spinner"></div>')
+  const classes = await api('GET', '/classes')
+  if (!classes?.success) { setContent('<div class="empty">❌ Erreur de chargement.</div>'); return }
+
+  const cl = classes.data || []
+  const firstId = cl[0]?.id || ''
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">📅 Emploi du Temps</h1><p class="page-subtitle">Planning hebdomadaire</p></div>
+    ${USER?.role==='admin' ? `<button class="btn btn-primary" onclick="modalCreerCreneau()">+ Ajouter créneau</button>` : ''}
+  </div>
+  <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
+    <select class="form-control" id="sel-classe" style="width:250px" onchange="loadGrille()">
+      ${cl.map(c => `<option value="${c.id}">${c.libelle}</option>`).join('')}
+    </select>
+    <div style="display:flex;align-items:center;gap:0.75rem;background:white;padding:0.4rem 0.75rem;border-radius:8px;border:1px solid var(--border)">
+      <button class="btn btn-secondary btn-sm" onclick="navSemaine(-1)">◀</button>
+      <span id="label-semaine" style="font-weight:700;min-width:200px;text-align:center">—</span>
+      <button class="btn btn-secondary btn-sm" onclick="navSemaine(1)">▶</button>
+    </div>
+    <button class="btn btn-secondary" onclick="loadGrille()">🔄</button>
+  </div>
+  <div id="grille-container"><div class="spinner"></div></div>`
+
+  setContent(html)
+
+  // Date de la semaine courante (lundi)
+  window._semaine = getLundi(new Date())
+  document.getElementById('label-semaine').textContent = 'Semaine du ' + formatDate(window._semaine)
+
+  loadGrille()
+}
+
+async function loadGrille() {
+  const idClasse = document.getElementById('sel-classe')?.value
+  if (!idClasse) return
+
+  const semaine  = window._semaine || getLundi(new Date())
+  document.getElementById('label-semaine').textContent = 'Semaine du ' + formatDate(semaine)
+
+  const res = await api('GET', `/emploi-temps?id_classe=${idClasse}&semaine=${semaine}`)
+  const ets  = res?.data || []
+
+  if (!ets.length) {
+    document.getElementById('grille-container').innerHTML = `
+    <div class="card"><div class="empty">
+      <div style="font-size:2rem">📭</div>
+      <p>Aucun emploi du temps pour cette semaine.</p>
+      ${USER?.role==='admin' ? `<button class="btn btn-primary" style="margin-top:1rem" onclick="modalCreerET()">Créer un planning</button>` : ''}
+    </div></div>`
+    return
+  }
+
+  const detail = await api('GET', `/emploi-temps/${ets[0].id}`)
+  const creneaux = detail?.data?.creneaux || []
+  const et = detail?.data
+
+  // Grille
+  let grilleHtml = `<div style="margin-bottom:0.5rem;display:flex;gap:0.5rem;align-items:center">`
+  if (et) {
+    const pubBadge = et.statut_publication === 'publié' ? 'success' : 'warning'
+    grilleHtml += `<span class="badge badge-${pubBadge}">${et.statut_publication}</span>`
+    grilleHtml += `<span style="font-size:0.8rem;color:var(--gray)">${creneaux.length} créneau(x)</span>`
+    if (USER?.role==='admin') {
+      grilleHtml += `<button class="btn btn-secondary btn-sm" onclick="publierET(${et.id})">${et.statut_publication==='publié'?'🔒 Dépublier':'🌐 Publier'}</button>`
+      grilleHtml += `<button class="btn btn-secondary btn-sm" onclick="dupliquerET(${et.id})">📋 Dupliquer</button>`
+    }
+  }
+  grilleHtml += '</div>'
+
+  grilleHtml += `<div class="grille-hebdo" style="font-size:0.75rem">`
+
+  // Headers
+  grilleHtml += `<div class="grille-header" style="background:var(--dark);color:white">Heure</div>`
+  JOURS.forEach(j => {
+    grilleHtml += `<div class="grille-header" style="background:var(--dark);color:white">${j}</div>`
+  })
+
+  // Lignes heures
+  HEURES.forEach((h, hi) => {
+    grilleHtml += `<div class="grille-heure">${h}</div>`
+    JOURS.forEach((jour, ji) => {
+      const cs = creneaux.filter(c => c.jour === jour && parseInt(c.heure_debut) === (hi + 7))
+      let cellHtml = ''
+      cs.forEach(c => {
+        const color = COULEURS[(c.id_matiere-1) % COULEURS.length]
+        cellHtml += `<div class="creneau-chip" style="background:${color}" title="${c.matiere} - ${c.enseignant}">
+          <div style="font-weight:700">${c.type_seance}</div>
+          <div>${c.matiere?.substring(0,15)}</div>
+          <div style="opacity:0.85">${c.salle}</div>
+          ${USER?.role==='admin' ? `<button onclick="deleteCreneau(${c.id})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.3);border:none;color:white;border-radius:3px;cursor:pointer;font-size:10px;padding:1px 3px">✕</button>` : ''}
+        </div>`
+      })
+      grilleHtml += `<div class="grille-cell">${cellHtml}</div>`
+    })
+  })
+
+  grilleHtml += '</div>'
+
+  document.getElementById('grille-container').innerHTML = `<div class="card" style="padding:1rem">${grilleHtml}</div>`
+}
+
+function navSemaine(dir) {
+  const d = new Date(window._semaine)
+  d.setDate(d.getDate() + dir * 7)
+  window._semaine = getLundi(d)
+  loadGrille()
+}
+
+async function publierET(id) {
+  const r = await api('PUT', `/emploi-temps/${id}/publier`)
+  if (r?.success) { showToast('✅ ' + r.message); loadGrille() }
+}
+
+async function dupliquerET(id) {
+  if (!confirm('Dupliquer vers la semaine suivante ?')) return
+  const r = await api('POST', `/emploi-temps/${id}/dupliquer`)
+  if (r?.success) { showToast('✅ ' + r.message, 'success'); window._semaine = r.data.semaine_debut; loadGrille() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+async function deleteCreneau(id) {
+  if (!confirm('Supprimer ce créneau ?')) return
+  const r = await api('DELETE', `/creneaux/${id}`)
+  if (r?.success) { showToast('✅ Créneau supprimé'); loadGrille() }
+}
+
+async function modalCreerET() {
+  const classes = await api('GET', '/classes')
+  const cl = classes?.data || []
+  openModal('Créer un emploi du temps', `
+    <div class="form-group"><label class="form-label">Classe</label>
+    <select class="form-control" id="m-classe">
+      ${cl.map(c=>`<option value="${c.id}">${c.libelle}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label class="form-label">Semaine (lundi)</label>
+    <input type="date" class="form-control" id="m-semaine" value="${getLundi(new Date())}"></div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitCreerET()">Créer</button>
+    </div>`)
+}
+
+async function submitCreerET() {
+  const r = await api('POST', '/emploi-temps', {
+    id_classe:    document.getElementById('m-classe').value,
+    semaine_debut: document.getElementById('m-semaine').value
+  })
+  if (r?.success) { showToast('✅ Planning créé !'); closeModal(); loadGrille() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+async function modalCreerCreneau() {
+  const [mats, ens, salles, cls] = await Promise.all([
+    api('GET','/matieres'), api('GET','/enseignants'),
+    api('GET','/salles'),   api('GET','/classes')
+  ])
+  const idClasse = document.getElementById('sel-classe')?.value
+  const semaine  = window._semaine || getLundi(new Date())
+
+  // Trouver l'emploi du temps
+  const etRes = await api('GET', `/emploi-temps?id_classe=${idClasse}&semaine=${semaine}`)
+  const etId  = etRes?.data?.[0]?.id
+
+  if (!etId) { showToast('⚠️ Créez d\'abord un emploi du temps pour cette semaine', 'warning'); return }
+
+  openModal('Ajouter un créneau', `
+    <div class="form-group"><label class="form-label">Matière</label>
+    <select class="form-control" id="m-mat">
+      ${(mats?.data||[]).map(m=>`<option value="${m.id}">${m.libelle}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label class="form-label">Enseignant</label>
+    <select class="form-control" id="m-ens">
+      ${(ens?.data||[]).map(e=>`<option value="${e.id}">${e.prenom} ${e.nom}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label class="form-label">Salle</label>
+    <select class="form-control" id="m-salle">
+      ${(salles?.data||[]).map(s=>`<option value="${s.id}">${s.code} (${s.capacite} pl.)</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label class="form-label">Jour</label>
+    <select class="form-control" id="m-jour">
+      ${JOURS.map(j=>`<option>${j}</option>`).join('')}
+    </select></div>
+    <div style="display:flex;gap:1rem">
+      <div class="form-group" style="flex:1"><label class="form-label">Début</label>
+      <input type="time" class="form-control" id="m-debut" value="08:00"></div>
+      <div class="form-group" style="flex:1"><label class="form-label">Fin</label>
+      <input type="time" class="form-control" id="m-fin" value="10:00"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Type</label>
+    <select class="form-control" id="m-type">
+      <option value="CM">CM — Cours Magistral</option>
+      <option value="TD">TD — Travaux Dirigés</option>
+      <option value="TP">TP — Travaux Pratiques</option>
+    </select></div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitCreerCreneau(${etId})">Enregistrer</button>
+    </div>`)
+}
+
+async function submitCreerCreneau(etId) {
+  const r = await api('POST', '/creneaux', {
+    id_emploi_temps: etId,
+    id_matiere:   document.getElementById('m-mat').value,
+    id_enseignant:document.getElementById('m-ens').value,
+    id_salle:     document.getElementById('m-salle').value,
+    jour:         document.getElementById('m-jour').value,
+    heure_debut:  document.getElementById('m-debut').value,
+    heure_fin:    document.getElementById('m-fin').value,
+    type_seance:  document.getElementById('m-type').value,
+  })
+  if (r?.success) { showToast('✅ Créneau ajouté !'); closeModal(); loadGrille() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+// ══════════════════════════════════════════════════════════
+//  POINTAGE
+// ══════════════════════════════════════════════════════════
+async function renderPointage() {
+  const today = new Date().toISOString().split('T')[0]
+  const pts   = await api('GET', `/pointages?date=${today}`)
+  const list  = pts?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">📱 Pointage QR-Code</h1></div>
+  </div>
+  <div class="card" style="max-width:500px;margin-bottom:1rem">
+    <div class="card-header"><h3 class="card-title">🔍 Scanner / Saisir un token QR</h3></div>
+    <div class="form-group">
+      <label class="form-label">Token QR</label>
+      <input class="form-control" id="inp-token" placeholder="Coller le token QR ici...">
+      <small style="color:var(--gray);font-size:0.75rem">Extrait automatiquement de l'URL du QR-Code</small>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="doPointage()">✅ Valider le pointage</button>
+    <div id="pointage-result" style="margin-top:1rem"></div>
+  </div>`
+
+  // Générer QR pour un créneau (admin)
+  if (USER?.role === 'admin') {
+    const creneaux = await api('GET', '/creneaux')
+    const cr = creneaux?.data || []
+    html += `<div class="card" style="max-width:500px;margin-bottom:1rem">
+      <div class="card-header"><h3 class="card-title">📲 Générer un QR-Code</h3></div>
+      <div class="form-group"><label class="form-label">Créneau</label>
+      <select class="form-control" id="sel-creneau-qr">
+        ${cr.map(c=>`<option value="${c.id}">${c.jour} ${c.heure_debut?.substring(0,5)} — ${c.matiere||'?'} (${c.classe||'?'})</option>`).join('')}
+      </select></div>
+      <button class="btn btn-secondary" onclick="genererQR()">📱 Générer QR-Code</button>
+      <div id="qr-result" style="margin-top:1rem"></div>
+    </div>`
+  }
+
+  html += `<div class="card">
+    <div class="card-header">
+      <h3 class="card-title">📋 Pointages d'aujourd'hui</h3>
+      <button class="btn btn-secondary btn-sm" onclick="renderPointage()">🔄</button>
+    </div>`
+
+  if (!list.length) {
+    html += '<div class="empty">Aucun pointage enregistré aujourd\'hui.</div>'
+  } else {
+    html += `<div class="table-wrap"><table>
+      <thead><tr><th>Enseignant</th><th>Matière</th><th>Classe</th><th>Prévu</th><th>Réel</th><th>Statut</th></tr></thead>
+      <tbody>`
+    list.forEach(p => {
+      const style = p.statut==='à_l_heure' ? 'success' : p.statut==='retard' ? 'warning' : 'danger'
+      html += `<tr>
+        <td><strong>${p.enseignant}</strong></td>
+        <td>${p.matiere}</td><td>${p.classe}</td>
+        <td>${p.heure_debut?.substring(0,5)}</td>
+        <td>${new Date(p.heure_pointage_reelle).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</td>
+        <td><span class="badge badge-${style}">${p.statut}</span></td>
+      </tr>`
+    })
+    html += '</tbody></table></div>'
+  }
+  html += '</div>'
+  setContent(html)
+
+  // Lire token depuis URL
+  const params = new URLSearchParams(window.location.search)
+  const tokenUrl = params.get('token')
+  if (tokenUrl) document.getElementById('inp-token').value = tokenUrl
+}
+
+async function doPointage() {
+  const token = document.getElementById('inp-token').value.trim()
+  if (!token) return
+  const r = await api('POST', '/pointages/scan', { token_qr: token })
+  const div = document.getElementById('pointage-result')
+  if (r?.success) {
+    div.innerHTML = `<div style="background:#d1fae5;color:#065f46;padding:1rem;border-radius:8px">
+      ✅ Pointage enregistré ! Heure : <strong>${r.data?.heure_reelle}</strong> — Statut : <strong>${r.data?.statut}</strong>
+      ${r.data?.alerte ? `<br>⚠️ ${r.data.alerte}` : ''}
+    </div>`
+    document.getElementById('inp-token').value = ''
+  } else {
+    div.innerHTML = `<div style="background:#fee2e2;color:#991b1b;padding:1rem;border-radius:8px">❌ ${r?.error || 'Échec du pointage'}</div>`
+  }
+}
+
+async function genererQR() {
+  const id = document.getElementById('sel-creneau-qr').value
+  const r  = await api('GET', `/creneaux/${id}/qr`)
+  const div = document.getElementById('qr-result')
+  if (r?.success) {
+    div.innerHTML = `<div style="background:#d1fae5;color:#065f46;padding:0.75rem;border-radius:8px;font-size:0.85rem">
+      ✅ Token généré — expire le <strong>${r.data.expire_le}</strong><br>
+      <a href="${r.data.qr_image_url}" target="_blank" style="color:#059669">📷 Voir le QR-Code</a>
+    </div>`
+  } else {
+    div.innerHTML = `<div style="background:#fee2e2;color:#991b1b;padding:0.75rem;border-radius:8px">❌ ${r?.error}</div>`
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  CAHIERS
+// ══════════════════════════════════════════════════════════
+async function renderCahiers() {
+  setContent('<div class="spinner"></div>')
+  const res  = await api('GET', '/cahiers')
+  const list = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">📓 Cahier de Texte</h1></div>
+    ${['delegue','admin'].includes(USER?.role) ? `<button class="btn btn-primary" onclick="modalCreerCahier()">+ Nouveau cahier</button>` : ''}
+  </div>
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Liste des cahiers</h3><button class="btn btn-secondary btn-sm" onclick="renderCahiers()">🔄</button></div>`
+
+  if (!list.length) {
+    html += '<div class="empty"><div style="font-size:2rem">📓</div><p>Aucun cahier de texte créé.</p></div>'
+  } else {
+    html += `<div class="table-wrap"><table>
+      <thead><tr><th>Matière</th><th>Classe</th><th>Enseignant</th><th>Jour</th><th>Titre</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody>`
+    list.forEach(c => {
+      const badge = c.statut==='clôturé' ? 'success' : c.statut==='signé_délégué' ? 'primary' : 'warning'
+      html += `<tr>
+        <td><strong>${c.matiere}</strong></td>
+        <td>${c.classe}</td>
+        <td>${c.enseignant}</td>
+        <td>${c.jour} ${c.heure_debut?.substring(0,5)}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.titre_cours}</td>
+        <td><span class="badge badge-${badge}">${c.statut}</span></td>
+        <td style="display:flex;gap:0.3rem">
+          <button class="btn btn-secondary btn-sm" onclick="voirCahier(${c.id})">👁️</button>
+          ${c.statut!=='clôturé' && ['delegue','enseignant','admin'].includes(USER?.role) ?
+            `<button class="btn btn-secondary btn-sm" style="color:var(--primary)" onclick="signerCahier(${c.id})">✍️</button>` : ''}
+          ${c.statut==='signé_délégué' && USER?.role==='enseignant' ?
+            `<button class="btn btn-success btn-sm" onclick="cloturerCahier(${c.id})">🔒</button>` : ''}
+        </td>
+      </tr>`
+    })
+    html += '</tbody></table></div>'
+  }
+  html += '</div>'
+  setContent(html)
+}
+
+async function voirCahier(id) {
+  const res = await api('GET', `/cahiers/${id}`)
+  const c   = res?.data
+  if (!c) return
+
+  let body = `
+  <p><strong>Matière :</strong> ${c.matiere} — <strong>Classe :</strong> ${c.classe}</p>
+  <p><strong>Enseignant :</strong> ${c.enseignant}</p>
+  <p><strong>Jour :</strong> ${c.jour} ${c.heure_debut?.substring(0,5)}–${c.heure_fin?.substring(0,5)}</p>
+  <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border)">`
+
+  if (c.contenu?.points_vus?.length) {
+    body += `<p><strong>Points vus :</strong></p><ul style="margin:0.5rem 0 0 1rem;font-size:0.875rem">`
+    c.contenu.points_vus.forEach(p => body += `<li>${p}</li>`)
+    body += '</ul>'
+  }
+  if (c.contenu?.niveau_avancement) body += `<p style="margin-top:0.5rem"><strong>Avancement :</strong> ${c.contenu.niveau_avancement}</p>`
+  if (c.travaux?.length) {
+    body += `<p style="margin-top:0.75rem"><strong>Travaux :</strong></p>`
+    c.travaux.forEach(t => {
+      body += `<div style="background:var(--light);padding:0.4rem 0.6rem;border-radius:6px;margin-top:0.25rem;font-size:0.85rem">📌 ${t.description} — ${t.type}</div>`
+    })
+  }
+  if (c.signatures?.length) {
+    body += `<p style="margin-top:0.75rem"><strong>Signatures :</strong></p><div style="display:flex;gap:1rem;margin-top:0.5rem">`
+    c.signatures.forEach(s => {
+      body += `<div style="text-align:center">
+        <img src="${s.signature_base64}" style="width:120px;height:60px;border:1px solid var(--border);border-radius:6px;background:white">
+        <p style="font-size:0.75rem;margin-top:0.25rem">${s.type_signataire}</p>
+      </div>`
+    })
+    body += '</div>'
+  }
+
+  openModal(`📓 ${c.titre_cours}`, body)
+}
+
+async function modalCreerCahier() {
+  const creneaux = await api('GET', '/creneaux')
+  const cr = (creneaux?.data||[]).filter(c => ['en_cours','terminé'].includes(c.statut))
+
+  openModal('Nouveau cahier de texte', `
+    <div class="form-group"><label class="form-label">Créneau (séance en cours)</label>
+    <select class="form-control" id="m-creneau">
+      ${cr.length ? cr.map(c=>`<option value="${c.id}">${c.jour} ${c.heure_debut?.substring(0,5)} — ${c.matiere||'?'} (${c.classe||'?'})</option>`).join('') : '<option value="">Aucune séance en cours</option>'}
+    </select></div>
+    <div class="form-group"><label class="form-label">Titre / Chapitre</label>
+    <input class="form-control" id="m-titre" placeholder="ex: Chapitre 3 — Protocole TCP"></div>
+    <div class="form-group"><label class="form-label">Points vus (un par ligne)</label>
+    <textarea class="form-control" id="m-points" rows="3" placeholder="Notion 1&#10;Notion 2..."></textarea></div>
+    <div class="form-group"><label class="form-label">Niveau d'avancement</label>
+    <input class="form-control" id="m-avancement" placeholder="ex: Chapitre 3/7 — 40%"></div>
+    <div class="form-group"><label class="form-label">Observations</label>
+    <textarea class="form-control" id="m-obs" rows="2" placeholder="Retards, absences..."></textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitCreerCahier()">Créer</button>
+    </div>`)
+}
+
+async function submitCreerCahier() {
+  const r = await api('POST', '/cahiers', {
+    id_creneau:        document.getElementById('m-creneau').value,
+    titre_cours:       document.getElementById('m-titre').value,
+    points_vus:        document.getElementById('m-points').value.split('\n').filter(Boolean),
+    niveau_avancement: document.getElementById('m-avancement').value,
+    observations:      document.getElementById('m-obs').value,
+  })
+  if (r?.success) { showToast('✅ Cahier créé !'); closeModal(); renderCahiers() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+async function signerCahier(id) {
+  openModal('✍️ Apposer ma signature', `
+    <p style="margin-bottom:1rem;font-size:0.875rem;color:var(--gray)">Signez dans le cadre ci-dessous avec la souris ou le doigt</p>
+    <canvas id="sign-canvas" class="sign-canvas"></canvas>
+    <p style="font-size:0.75rem;color:var(--gray);margin-top:0.25rem">Dessinez votre signature ci-dessus</p>
+    <div style="display:flex;justify-content:space-between;margin-top:1rem">
+      <button class="btn btn-secondary btn-sm" onclick="clearCanvas()">🗑️ Effacer</button>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="submitSigner(${id})">✅ Signer</button>
+      </div>
+    </div>`)
+  setTimeout(() => initCanvas('sign-canvas'), 100)
+}
+
+async function cloturerCahier(id) {
+  openModal('🔒 Clôturer la séance', `
+    <div class="form-group"><label class="form-label">Heure de fin réelle</label>
+    <input type="time" class="form-control" id="m-heure-fin" value="${new Date().toTimeString().substring(0,5)}"></div>
+    <p style="margin-bottom:0.5rem;font-size:0.875rem;font-weight:600">Signature enseignant</p>
+    <canvas id="sign-canvas" class="sign-canvas"></canvas>
+    <div style="display:flex;justify-content:space-between;margin-top:1rem">
+      <button class="btn btn-secondary btn-sm" onclick="clearCanvas()">🗑️ Effacer</button>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-success" onclick="submitCloturer(${id})">🔒 Clôturer</button>
+      </div>
+    </div>`)
+  setTimeout(() => initCanvas('sign-canvas'), 100)
+}
+
+async function submitSigner(id) {
+  const sig = getSignature()
+  if (!sig) { showToast('⚠️ Veuillez signer', 'warning'); return }
+  const r = await api('POST', `/cahiers/${id}/signer`, { signature_base64: sig, type: USER?.role==='enseignant' ? 'enseignant' : 'delegue' })
+  if (r?.success) { showToast('✅ Signature apposée !'); closeModal(); renderCahiers() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+async function submitCloturer(id) {
+  const heure = document.getElementById('m-heure-fin')?.value
+  const sig   = getSignature()
+  if (!sig)   { showToast('⚠️ Signature requise', 'warning'); return }
+  if (!heure) { showToast('⚠️ Heure de fin requise', 'warning'); return }
+  const r = await api('POST', `/cahiers/${id}/cloture`, { signature_base64: sig, heure_fin: heure })
+  if (r?.success) { showToast('✅ Séance clôturée !'); closeModal(); renderCahiers() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+// ── Canvas signature ────────────────────────────────────────
+let _drawing = false, _ctx = null, _canvas = null, _signed = false
+
+function initCanvas(id) {
+  _canvas = document.getElementById(id)
+  if (!_canvas) return
+  _ctx = _canvas.getContext('2d')
+  _ctx.fillStyle = '#fff'
+  _ctx.fillRect(0, 0, _canvas.width, _canvas.height)
+  _signed = false
+  _canvas.onmousedown  = e => { _drawing=true; _ctx.beginPath(); const p=pos(e); _ctx.moveTo(p.x,p.y) }
+  _canvas.onmousemove  = e => { if(!_drawing) return; const p=pos(e); _ctx.lineWidth=2;_ctx.lineCap='round';_ctx.strokeStyle='#1e293b';_ctx.lineTo(p.x,p.y);_ctx.stroke();_signed=true }
+  _canvas.onmouseup    = () => _drawing=false
+  _canvas.onmouseleave = () => _drawing=false
+  _canvas.ontouchstart = e => { _drawing=true; const p=pos(e.touches[0]); _ctx.beginPath();_ctx.moveTo(p.x,p.y); e.preventDefault() }
+  _canvas.ontouchmove  = e => { if(!_drawing) return; const p=pos(e.touches[0]);_ctx.lineWidth=2;_ctx.lineCap='round';_ctx.strokeStyle='#1e293b';_ctx.lineTo(p.x,p.y);_ctx.stroke();_signed=true; e.preventDefault() }
+  _canvas.ontouchend   = () => _drawing=false
+}
+
+function pos(e) {
+  const r = _canvas.getBoundingClientRect()
+  return { x: (e.clientX||e.pageX) - r.left, y: (e.clientY||e.pageY) - r.top }
+}
+
+function clearCanvas() {
+  if (_ctx && _canvas) { _ctx.fillStyle='#fff'; _ctx.fillRect(0,0,_canvas.width,_canvas.height); _signed=false }
+}
+
+function getSignature() {
+  return _signed && _canvas ? _canvas.toDataURL('image/png') : null
+}
+
+// ══════════════════════════════════════════════════════════
+//  VACATIONS
+// ══════════════════════════════════════════════════════════
+async function renderVacations() {
+  setContent('<div class="spinner"></div>')
+  const params = USER?.role==='enseignant' ? `?id_enseignant=${USER.id_lien}` : ''
+  const res    = await api('GET', `/vacations${params}`)
+  const list   = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">💰 Fiches de Vacation</h1></div>
+    ${['admin','surveillant'].includes(USER?.role) ? `<button class="btn btn-primary" onclick="modalGenererVacation()">+ Générer une fiche</button>` : ''}
+  </div>
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Fiches de vacation</h3><button class="btn btn-secondary btn-sm" onclick="renderVacations()">🔄</button></div>`
+
+  if (!list.length) {
+    html += '<div class="empty"><div style="font-size:2rem">💰</div><p>Aucune fiche générée.</p></div>'
+  } else {
+    html += `<div class="table-wrap"><table>
+      <thead><tr><th>Enseignant</th><th>Période</th><th>Séances</th><th>Heures</th><th>Montant net</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody>`
+    list.forEach(v => {
+      const badge = v.statut==='approuvée'||v.statut==='payée' ? 'success' : v.statut==='visée_surveillant' ? 'primary' : 'warning'
+      html += `<tr>
+        <td><strong>${v.enseignant}</strong></td>
+        <td>${MOIS_NOM[v.mois]} ${v.annee}</td>
+        <td>${v.nb_seances||0}</td>
+        <td>${parseFloat(v.total_heures||0).toFixed(1)}h</td>
+        <td><strong>${parseInt(v.montant_net||0).toLocaleString()} FCFA</strong></td>
+        <td><span class="badge badge-${badge}">${v.statut}</span></td>
+        <td style="display:flex;gap:0.3rem">
+          <button class="btn btn-secondary btn-sm" onclick="window.open('${API}/vacations/${v.id}/pdf','_blank')">🖨️</button>
+          ${USER?.role==='surveillant' && v.statut==='générée' ? `<button class="btn btn-secondary btn-sm" style="color:var(--primary)" onclick="viserVacation(${v.id})">✅ Viser</button>` : ''}
+          ${USER?.role==='comptable' && v.statut==='visée_surveillant' ? `<button class="btn btn-success btn-sm" onclick="approuverVacation(${v.id})">💵</button>` : ''}
+        </td>
+      </tr>`
+    })
+    html += '</tbody></table></div>'
+  }
+  html += '</div>'
+  setContent(html)
+}
+
+async function modalGenererVacation() {
+  const ens = await api('GET', '/enseignants')
+  const e   = ens?.data || []
+  const now = new Date()
+
+  openModal('Générer une fiche de vacation', `
+    <div class="form-group"><label class="form-label">Enseignant</label>
+    <select class="form-control" id="m-ens-vac">
+      ${e.map(e=>`<option value="${e.id}">${e.prenom} ${e.nom} (${e.statut})</option>`).join('')}
+    </select></div>
+    <div style="display:flex;gap:1rem">
+      <div class="form-group" style="flex:1"><label class="form-label">Mois</label>
+      <select class="form-control" id="m-mois-vac">
+        ${MOIS_NOM.slice(1).map((m,i)=>`<option value="${i+1}" ${i+1===now.getMonth()+1?'selected':''}>${m}</option>`).join('')}
+      </select></div>
+      <div class="form-group" style="flex:1"><label class="form-label">Année</label>
+      <input type="number" class="form-control" id="m-annee-vac" value="${now.getFullYear()}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Retenues (FCFA)</label>
+    <input type="number" class="form-control" id="m-ret-vac" value="0"></div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitGenererVacation()">📊 Générer</button>
+    </div>`)
+}
+
+async function submitGenererVacation() {
+  const r = await api('POST', '/vacations/generer', {
+    id_enseignant: document.getElementById('m-ens-vac').value,
+    mois:          document.getElementById('m-mois-vac').value,
+    annee:         document.getElementById('m-annee-vac').value,
+    retenues:      document.getElementById('m-ret-vac').value,
+  })
+  if (r?.success) { showToast(`✅ Fiche générée ! ${parseInt(r.data?.montant_brut||0).toLocaleString()} FCFA`); closeModal(); renderVacations() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+async function viserVacation(id) {
+  if (!confirm('Viser cette fiche ?')) return
+  const r = await api('POST', `/vacations/${id}/valider`, { commentaire: 'Visé conforme' })
+  if (r?.success) { showToast('✅ Fiche visée.'); renderVacations() }
+}
+
+async function approuverVacation(id) {
+  if (!confirm('Approuver pour paiement ?')) return
+  const r = await api('POST', `/vacations/${id}/approuver`, { commentaire: 'Approuvé' })
+  if (r?.success) { showToast('✅ Vacation approuvée.'); renderVacations() }
+}
+
+// ══════════════════════════════════════════════════════════
+//  RAPPORTS
+// ══════════════════════════════════════════════════════════
+async function renderRapports() {
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">📊 Rapports</h1></div>
+  </div>
+  <div class="card" style="max-width:500px;margin-bottom:1rem">
+    <div class="card-header"><h3 class="card-title">Paramètres</h3></div>
+    <div class="form-group"><label class="form-label">Mois</label>
+    <select class="form-control" id="r-mois">
+      ${MOIS_NOM.slice(1).map((m,i)=>`<option value="${i+1}" ${i+1===new Date().getMonth()+1?'selected':''}>${m}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label class="form-label">Année</label>
+    <input type="number" class="form-control" id="r-annee" value="${new Date().getFullYear()}"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="loadRapport()">📊 Générer</button>
+  </div>
+  <div id="rapport-result"></div>`
+  setContent(html)
+}
+
+async function loadRapport() {
+  const data = await api('GET', '/dashboard/stats')
+  if (!data?.success) return
+  const d = data.data
+  document.getElementById('rapport-result').innerHTML = `
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon" style="background:#EEF2FF">📅</div><div><div class="stat-value" style="color:var(--primary)">${d.seances_jour||0}</div><div class="stat-label">Séances du jour</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div><div class="stat-value" style="color:var(--success)">${d.pointages_jour||0}</div><div class="stat-label">Pointages</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#FEF3C7">⚠️</div><div><div class="stat-value" style="color:var(--warning)">${d.retards_jour||0}</div><div class="stat-label">Retards</div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:#FEE2E2">📓</div><div><div class="stat-value" style="color:var(--danger)">${d.cahiers_non_clos||0}</div><div class="stat-label">Cahiers non clôturés</div></div></div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════════════════
+//  RÉFÉRENTIELS
+// ══════════════════════════════════════════════════════════
+async function renderClasses() {
+  setContent('<div class="spinner"></div>')
+  const res  = await api('GET', '/classes')
+  const list = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">🏫 Classes</h1></div>
+    <button class="btn btn-primary" onclick="modalAjouter('classe')">+ Nouvelle classe</button>
+  </div>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Code</th><th>Libellé</th><th>Niveau</th><th>Année</th><th>Effectif</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${list.map(c=>`<tr>
+      <td><span class="badge badge-primary">${c.code}</span></td>
+      <td><strong>${c.libelle}</strong></td><td>${c.niveau}</td>
+      <td>${c.annee_academique}</td><td>${c.effectif}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="supprimerItem('classes',${c.id},'renderClasses')">🗑️</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`
+  setContent(html)
+}
+
+async function renderEnseignants() {
+  setContent('<div class="spinner"></div>')
+  const res  = await api('GET', '/enseignants')
+  const list = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">👨‍🏫 Enseignants</h1></div>
+    <button class="btn btn-primary" onclick="modalAjouter('enseignant')">+ Nouvel enseignant</button>
+  </div>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Matricule</th><th>Nom complet</th><th>Email</th><th>Spécialité</th><th>Statut</th><th>Taux/h</th></tr></thead>
+    <tbody>
+    ${list.map(e=>`<tr>
+      <td><span class="badge badge-gray">${e.matricule}</span></td>
+      <td><strong>${e.prenom} ${e.nom}</strong></td><td>${e.email}</td>
+      <td>${e.specialite||'—'}</td>
+      <td><span class="badge badge-${e.statut==='permanent'?'success':'warning'}">${e.statut}</span></td>
+      <td>${parseInt(e.taux_horaire).toLocaleString()} FCFA</td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`
+  setContent(html)
+}
+
+async function renderMatieres() {
+  setContent('<div class="spinner"></div>')
+  const res  = await api('GET', '/matieres')
+  const list = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">📚 Matières</h1></div>
+    <button class="btn btn-primary" onclick="modalAjouter('matiere')">+ Nouvelle matière</button>
+  </div>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Code</th><th>Libellé</th><th>Volume horaire</th><th>Coefficient</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${list.map(m=>`<tr>
+      <td><span class="badge badge-primary">${m.code}</span></td>
+      <td><strong>${m.libelle}</strong></td>
+      <td>${m.volume_horaire_total}h</td><td>${m.coefficient}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="supprimerItem('matieres',${m.id},'renderMatieres')">🗑️</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`
+  setContent(html)
+}
+
+async function renderSalles() {
+  setContent('<div class="spinner"></div>')
+  const res  = await api('GET', '/salles')
+  const list = res?.data || []
+
+  let html = `
+  <div class="page-header">
+    <div><h1 class="page-title">🚪 Salles</h1></div>
+    <button class="btn btn-primary" onclick="modalAjouter('salle')">+ Nouvelle salle</button>
+  </div>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Code</th><th>Capacité</th><th>Équipements</th><th>Bâtiment</th><th>Actions</th></tr></thead>
+    <tbody>
+    ${list.map(s=>`<tr>
+      <td><span class="badge badge-primary">${s.code}</span></td>
+      <td>${s.capacite} places</td>
+      <td style="font-size:0.8rem">${s.equipements||'—'}</td>
+      <td>${s.batiment||'—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="supprimerItem('salles',${s.id},'renderSalles')">🗑️</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`
+  setContent(html)
+}
+
+function modalAjouter(type) {
+  const configs = {
+    classe: {
+      title: 'Nouvelle classe',
+      fields: `
+        <div class="form-group"><label class="form-label">Code</label><input class="form-control" id="m-code" placeholder="ex: L3-RST"></div>
+        <div class="form-group"><label class="form-label">Libellé</label><input class="form-control" id="m-libelle" placeholder="ex: Licence 3 RST"></div>
+        <div class="form-group"><label class="form-label">Niveau</label><select class="form-control" id="m-niveau">
+          ${['Licence 1','Licence 2','Licence 3','Master 1','Master 2','Ingénieur'].map(n=>`<option>${n}</option>`).join('')}
+        </select></div>
+        <div class="form-group"><label class="form-label">Année académique</label><input class="form-control" id="m-annee" value="2025-2026"></div>
+        <div class="form-group"><label class="form-label">Effectif</label><input type="number" class="form-control" id="m-effectif" value="0"></div>`,
+      submit: () => api('POST','/classes',{code:v('m-code'),libelle:v('m-libelle'),niveau:v('m-niveau'),annee_academique:v('m-annee'),effectif:v('m-effectif')}),
+      reload: 'renderClasses'
+    },
+    matiere: {
+      title: 'Nouvelle matière',
+      fields: `
+        <div class="form-group"><label class="form-label">Code</label><input class="form-control" id="m-code" placeholder="ex: RST309"></div>
+        <div class="form-group"><label class="form-label">Libellé</label><input class="form-control" id="m-libelle" placeholder="ex: Systèmes embarqués"></div>
+        <div class="form-group"><label class="form-label">Volume horaire (h)</label><input type="number" class="form-control" id="m-volume" value="40"></div>
+        <div class="form-group"><label class="form-label">Coefficient</label><input type="number" class="form-control" id="m-coeff" value="3"></div>`,
+      submit: () => api('POST','/matieres',{code:v('m-code'),libelle:v('m-libelle'),volume_horaire_total:v('m-volume'),coefficient:v('m-coeff')}),
+      reload: 'renderMatieres'
+    },
+    salle: {
+      title: 'Nouvelle salle',
+      fields: `
+        <div class="form-group"><label class="form-label">Code</label><input class="form-control" id="m-code" placeholder="ex: SALLE-C01"></div>
+        <div class="form-group"><label class="form-label">Capacité</label><input type="number" class="form-control" id="m-cap" value="30"></div>
+        <div class="form-group"><label class="form-label">Équipements</label><input class="form-control" id="m-equip" placeholder="Vidéoprojecteur..."></div>
+        <div class="form-group"><label class="form-label">Bâtiment</label><input class="form-control" id="m-bat" placeholder="Bâtiment C"></div>`,
+      submit: () => api('POST','/salles',{code:v('m-code'),capacite:v('m-cap'),equipements:v('m-equip'),batiment:v('m-bat')}),
+      reload: 'renderSalles'
+    },
+    enseignant: {
+      title: 'Nouvel enseignant',
+      fields: `
+        <div class="form-group"><label class="form-label">Matricule</label><input class="form-control" id="m-mat"></div>
+        <div class="form-group"><label class="form-label">Nom</label><input class="form-control" id="m-nom"></div>
+        <div class="form-group"><label class="form-label">Prénom</label><input class="form-control" id="m-prenom"></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="m-email"></div>
+        <div class="form-group"><label class="form-label">Spécialité</label><input class="form-control" id="m-spe"></div>
+        <div class="form-group"><label class="form-label">Statut</label><select class="form-control" id="m-statut"><option value="vacataire">Vacataire</option><option value="permanent">Permanent</option></select></div>
+        <div class="form-group"><label class="form-label">Taux horaire (FCFA)</label><input type="number" class="form-control" id="m-taux" value="5000"></div>`,
+      submit: () => api('POST','/enseignants',{matricule:v('m-mat'),nom:v('m-nom'),prenom:v('m-prenom'),email:v('m-email'),specialite:v('m-spe'),statut:v('m-statut'),taux_horaire:v('m-taux')}),
+      reload: 'renderEnseignants'
+    }
+  }
+
+  const cfg = configs[type]
+  openModal(cfg.title, `
+    ${cfg.fields}
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:0.5rem">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitAjouter('${type}')">Enregistrer</button>
+    </div>`)
+
+  window._submitFn = cfg.submit
+  window._reloadFn = cfg.reload
+}
+
+async function submitAjouter(type) {
+  const r = await window._submitFn()
+  if (r?.success) {
+    showToast('✅ Ajouté avec succès !')
+    closeModal()
+    window[window._reloadFn]()
+  } else {
+    showToast('❌ ' + r?.error, 'danger')
+  }
+}
+
+async function supprimerItem(endpoint, id, reload) {
+  if (!confirm('Supprimer cet élément ?')) return
+  const r = await api('DELETE', `/${endpoint}/${id}`)
+  if (r?.success) { showToast('✅ Supprimé.'); window[reload]() }
+  else showToast('❌ ' + r?.error, 'danger')
+}
+
+// ══════════════════════════════════════════════════════════
+//  UTILITAIRES
+// ══════════════════════════════════════════════════════════
+function setContent(html) {
+  document.getElementById('page-content').innerHTML = html
+}
+
+function v(id) {
+  return document.getElementById(id)?.value || ''
+}
+
+function getLundi(date) {
+  const d = new Date(date)
+  const day = d.getDay()
+  d.setDate(d.getDate() - day + (day===0 ? -6 : 1))
+  return d.toISOString().split('T')[0]
+}
+
+function formatDate(str) {
+  if (!str) return ''
+  return new Date(str).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.background = type==='success' ? '#10b981' : type==='warning' ? '#f59e0b' : '#ef4444'
+  t.classList.remove('hidden')
+  setTimeout(() => t.classList.add('hidden'), 4000)
+}
+
+function openModal(title, body) {
+  document.getElementById('modal-title').textContent = title
+  document.getElementById('modal-body').innerHTML    = body
+  document.getElementById('modal').classList.remove('hidden')
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal')) return
+  document.getElementById('modal').classList.add('hidden')
+}
+</script>
+</body>
+</html>
