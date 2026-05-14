@@ -1,0 +1,60 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { NotifProvider } from './context/NotifContext';
+import DashboardLayout from './components/DashboardLayout';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import EmploiTempsPage from './pages/EmploiTempsPage';
+import CahiersPage from './pages/CahiersPage';
+import PointagePage from './pages/PointagePage';
+import QRCodesPage from './pages/QRCodesPage';
+import ChangerMotDePassePage from './pages/ChangerMotDePassePage';
+import VacationsPage from './pages/VacationsPage';
+import EnseignantsPage from './pages/EnseignantsPage';
+import ClassesPage from './pages/ClassesPage';
+import SallesPage from './pages/SallesPage';
+import UtilisateursPage from './pages/UtilisateursPage';
+import LogsPage from './pages/LogsPage';
+
+function PrivateRoute({ children, roles }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',fontSize:'1.2rem',color:'#64748b'}}>⏳ Chargement...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (roles && !roles.map(r => r.toLowerCase()).includes((user.role||'').toLowerCase())) {
+    console.warn('[PrivateRoute] Accès refusé — rôle:', user.role, '| Rôles autorisés:', roles);
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <DashboardLayout>{children}</DashboardLayout>;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ThemeProvider>
+    <AuthProvider>
+        <NotifProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+            <Route path="/emploi-temps" element={<PrivateRoute><EmploiTempsPage /></PrivateRoute>} />
+            <Route path="/cahiers" element={<PrivateRoute roles={['admin','enseignant','delegue','surveillant']}><CahiersPage /></PrivateRoute>} />
+            <Route path="/cahiers/nouveau" element={<PrivateRoute roles={['delegue']}><CahiersPage nouveau /></PrivateRoute>} />
+            <Route path="/pointage" element={<PrivateRoute roles={['enseignant']}><PointagePage /></PrivateRoute>} />
+            <Route path="/vacations" element={<PrivateRoute roles={['admin','enseignant','surveillant','comptable']}><VacationsPage /></PrivateRoute>} />
+            <Route path="/enseignants" element={<PrivateRoute roles={['admin']}><EnseignantsPage /></PrivateRoute>} />
+            <Route path="/classes" element={<PrivateRoute roles={['admin']}><ClassesPage /></PrivateRoute>} />
+            <Route path="/salles" element={<PrivateRoute roles={['admin']}><SallesPage /></PrivateRoute>} />
+            <Route path="/utilisateurs" element={<PrivateRoute roles={['admin']}><UtilisateursPage /></PrivateRoute>} />
+            <Route path="/logs" element={<PrivateRoute roles={['admin','surveillant']}><LogsPage /></PrivateRoute>} />
+            <Route path="/changer-mdp" element={<PrivateRoute><ChangerMotDePassePage /></PrivateRoute>} />
+          <Route path="/qrcodes" element={<PrivateRoute roles={['admin','surveillant']}><QRCodesPage /></PrivateRoute>} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </NotifProvider>
+      </AuthProvider>
+    </ThemeProvider>
+    </BrowserRouter>
+  );
+}
